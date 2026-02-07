@@ -8,6 +8,15 @@ export default function Question({ questionIndex, onSelect, onSkipAnswer }) {
     isCorrect: null,
   });
 
+  let timer = 10000;
+
+  if (answer.selectedAnswer) {
+    timer = 1000;
+  }
+
+  if (answer.isCorrect !== null) {
+    timer = 2000;
+  }
   function handleSelectAnswer(answer) {
     setAnswer({
       selectedAnswer: answer,
@@ -25,13 +34,20 @@ export default function Question({ questionIndex, onSelect, onSkipAnswer }) {
   }
   let answeState = '';
 
-  if (answer.selectedAnswer) {
+  if (answer.selectedAnswer && answer.isCorrect !== null) {
     answeState = answer.isCorrect ? 'correct' : 'wrong';
+  } else if (answer.selectedAnswer) {
+    answeState = 'answered';
   }
 
   return (
     <div id="question">
-      <QuestionTimer timeout={10000} onTimeout={onSkipAnswer} />
+      <QuestionTimer
+        key={timer}
+        timeout={timer}
+        onTimeout={answer.selectedAnswer === '' ? onSkipAnswer : null}
+        mode={answeState}
+      />
       <h2>{QUESTION[questionIndex].text}</h2>
       <Answers
         answerState={answeState}
